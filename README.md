@@ -2,6 +2,8 @@
 
 ## Main dependencies
 
+-   Three.js
+-   React Three Fiber
 -   TypeScript
 -   React Router
 -   Styled Components
