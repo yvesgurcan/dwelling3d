@@ -5,7 +5,6 @@
 -   Three.js
 -   React Three Fiber
 -   TypeScript
--   React Router
 -   Styled Components
 -   Webpack
 -   Babel
@@ -38,7 +37,5 @@ This command will run your tests, create a production build at the root of your 
 ## Structure
 
     src
-    ├── components
-    ├── views
     ├── index.tsx
     ├── index.html
