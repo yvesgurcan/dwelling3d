@@ -1,42 +1,67 @@
-import ReactDOM from 'react-dom';
-import React, { useRef, useState } from 'react';
-import { Canvas, useFrame } from 'react-three-fiber';
+import React, { Fragment, useRef } from 'react';
+import { render } from 'react-dom';
+import { createGlobalStyle } from 'styled-components';
+import { Canvas, useFrame, extend, useThree } from 'react-three-fiber';
+import { Vector3 } from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-function Box(props) {
-    // This reference will give us direct access to the mesh
-    const mesh = useRef();
+import House from './components/House';
+import Lawn from './components/Lawn';
+import Ground from './components/Ground';
+import Sun from './components/Sun';
 
-    // Set up state for the hovered and active state
-    const [hovered, setHover] = useState(false);
-    const [active, setActive] = useState(false);
+extend({ OrbitControls });
 
-    // Rotate mesh every frame, this is outside of React without overhead
-    useFrame(() => (mesh.current.rotation.x = mesh.current.rotation.y += 0.01));
+const GlobalStyles = createGlobalStyle`
+    body {
+        font-family: sans-serif;
+        margin: 0;
+        background: rgb(175, 175, 255);
+    }
+    
+    html,
+    body,
+    #root {
+        width: 100%;
+        height: 100%;
+    }
+`;
 
+function Controls() {
+    const controls = useRef();
+    const { camera, gl } = useThree();
+    useFrame(() => controls.current.update());
     return (
-        <mesh
-            {...props}
-            ref={mesh}
-            scale={active ? [1.5, 1.5, 1.5] : [1, 1, 1]}
-            onClick={e => setActive(!active)}
-            onPointerOver={e => setHover(true)}
-            onPointerOut={e => setHover(false)}
-        >
-            <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
-            <meshStandardMaterial
-                attach="material"
-                color={hovered ? 'hotpink' : 'orange'}
-            />
-        </mesh>
+        <orbitControls
+            ref={controls}
+            args={[camera, gl.domElement]}
+            enableDamping
+            dampingFactor={0.1}
+            rotateSpeed={0.5}
+        />
     );
 }
 
-ReactDOM.render(
-    <Canvas>
-        <ambientLight />
-        <pointLight position={[10, 10, 10]} />
-        <Box position={[-1.2, 0, 0]} />
-        <Box position={[1.2, 0, 0]} />
-    </Canvas>,
-    document.getElementById('app')
-);
+function App() {
+    return (
+        <Fragment>
+            <GlobalStyles />
+            <Canvas
+                shadowMap
+                camera={{
+                    position: new Vector3(0, 3, 7)
+                }}
+            >
+                <ambientLight intensity={1} />
+                <Sun />
+                <House />
+                <Lawn />
+                <Ground />
+                <Controls />
+            </Canvas>
+        </Fragment>
+    );
+}
+
+const rootElement = document.getElementById('root');
+render(<App />, rootElement);
