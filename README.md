@@ -1,5 +1,3 @@
-# React application
-
 ## Main dependencies
 
 -   Three.js
